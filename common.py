@@ -3,7 +3,7 @@ def find_in_list(elements, function):
 
 
 def xml_key_find(element, key):
-    children = element.getchildren()
+    children = list(element)
 
     for i, child in enumerate(children[:-1]):
         if child.text == key:

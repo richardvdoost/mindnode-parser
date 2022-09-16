@@ -1,8 +1,8 @@
-import xml.etree.ElementTree as ET
-from subprocess import run
-import shutil
 import os
 import re
+import shutil
+import xml.etree.ElementTree as ET
+from subprocess import run
 
 from common import xml_key_find
 
@@ -46,6 +46,12 @@ class Mindnode:
             for sub_node in sub_nodes:
                 node.sub_nodes.append(self.parse_sub_nodes(sub_node))
 
+        task = xml_key_find(root_node, "task")
+        if task is not None:
+            state = int(task.find("integer").text)
+
+            node.done = state == 2
+
         return node
 
     def find_node_title(self, elem):
@@ -58,13 +64,33 @@ class Mindnode:
         if not text:
             return None
 
-        return re.sub(r"<.*?>", "", text)
+        text = re.sub(r"<.*?>", "", text)
+
+        return text.replace("\u2028", " ")
 
 
 class Node:
     def __init__(self, title):
-        self.title = title
+        self.title = None
         self.sub_nodes = []
+        self.done = None
+        self.hours = None
+
+        self.hour_pattern = re.compile(r"(.+) - (\d+)h")
+        self.set_title(title)
+
+    def set_title(self, title):
+
+        if title is None:
+            return
+
+        match = self.hour_pattern.match(title)
+        if not match:
+            self.title = title
+            return
+
+        self.title = match.group(1)
+        self.hours = int(match.group(2))
 
     def __repr__(self):
         if not self.title:
@@ -73,6 +99,13 @@ class Node:
         value = {
             "title": self.title,
         }
+
+        if self.done is not None:
+            value["done"] = self.done
+
+        if self.hours is not None:
+            value["hours"] = self.hours
+
         if len(self.sub_nodes) > 0:
             value["sub_nodes"] = self.sub_nodes
 
