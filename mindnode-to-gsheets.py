@@ -9,8 +9,8 @@ from googleapiclient.discovery import build
 from common import find_in_list
 from mindnode import Mindnode
 
-HOME_PATH = os.environ["HOME"]
-CACHE_PATH = os.environ["XDG_CACHE_HOME"]
+HOME_PATH = os.environ.get("HOME", "/Users/richard")
+CACHE_PATH = os.environ.get("XDG_CACHE_HOME", "/Users/richard/.cache")
 MINDNODE_FILE = (
     f"{HOME_PATH}/Library/Mobile"
     " Documents/W6L39UYL6Z~com~mindnode~MindNode/Documents/Swarm Engine.mindnode"
@@ -54,11 +54,9 @@ def authenticate():
 
 
 def mind_map_to_2d_array(root_node):
-
     result = []
 
     for node in root_node.sub_nodes:
-
         lines = []
 
         if node.sub_nodes:
