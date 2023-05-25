@@ -66,7 +66,7 @@ class Mindnode:
 
         text = re.sub(r"<.*?>", "", text)
 
-        return text.replace("\u2028", " ")
+        return text.replace("\u2028", " ")  # Replace newline with space
 
 
 class Node:
@@ -91,6 +91,8 @@ class Node:
 
         self.title = match.group(1)
         self.hours = int(match.group(2))
+
+        print(f"{self.title} | {self.hours}h")
 
     def __repr__(self):
         if not self.title:
